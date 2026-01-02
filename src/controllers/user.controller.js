@@ -3,7 +3,7 @@ import {
   getUserById as getUserByIdService,
   updateUser as updateUserService,
   deleteUser as deleteUserService,
-} from '../services/user.services.js';
+} from '../services/user.service.js';
 import logger from '#config/logger.js';
 import {
   userIdSchema,
