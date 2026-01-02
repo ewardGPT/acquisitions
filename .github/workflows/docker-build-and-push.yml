@@ -1,0 +1,65 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract Docker metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/acquisitions
+          tags: |
+            # tag with branch name (e.g. main, staging)
+            type=ref,event=branch
+            # tag with short commit SHA
+            type=sha
+            # always publish a latest tag
+            type=raw,value=latest
+            # production tag with UTC timestamp prod-YYYYMMDD-HHmmss
+            type=raw,value=prod-{{date 'YYYYMMDD-HHmmss'}}
+          labels: |
+            org.opencontainers.image.title=acquisitions
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/acquisitions:latest
+          cache-to: type=inline
+
+      - name: Append GitHub Summary
+        run: |
+          echo "## Docker Image Published" >> "$GITHUB_STEP_SUMMARY"
+          echo "Image: \\`${{ secrets.DOCKER_USERNAME }}/acquisitions\\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Published tags:" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.meta.outputs.tags }}" | tr ' ' '\n' >> "$GITHUB_STEP_SUMMARY"
