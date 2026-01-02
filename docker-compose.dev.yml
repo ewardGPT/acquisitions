@@ -12,7 +12,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "pg_isready", "-h", "localhost", "-p", "5432"]
+      test: ['CMD', 'pg_isready', '-h', 'localhost', '-p', '5432']
       interval: 5s
       timeout: 5s
       retries: 5

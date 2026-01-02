@@ -5,12 +5,14 @@ This guide helps you migrate from your current setup to the Dockerized Neon setu
 ## Current State vs New State
 
 ### Before (Current)
+
 - Database connection: Direct to Neon Cloud
 - Configuration: `src/config/database.js`
 - No Docker containers
 - Manual environment management
 
 ### After (New)
+
 - Development: Neon Local via Docker (ephemeral branches)
 - Production: Neon Cloud (unchanged)
 - Configuration: `src/config/database.config.js` (environment-aware)
@@ -64,11 +66,12 @@ Copy-Item .env.development .env
 # Edit .env and add your Neon credentials
 # Required values:
 #   - NEON_API_KEY
-#   - NEON_PROJECT_ID  
+#   - NEON_PROJECT_ID
 #   - PARENT_BRANCH_ID
 ```
 
 **Where to get these values:**
+
 1. Go to [Neon Console](https://console.neon.tech)
 2. Select your project
 3. **API Key**: Account Settings → API Keys → Create New API Key
@@ -156,17 +159,20 @@ Move-Item src/config/database.js.backup src/config/database.js -Force
 ### Database URLs
 
 **Development (Old):**
+
 ```env
 DATABASE_URL=postgres://user:pass@ep-xxx.neon.tech/db?sslmode=require
 ```
 
 **Development (New - Docker):**
+
 ```env
 # In docker-compose.dev.yml, automatically set to:
 DATABASE_URL=postgres://neon:npg@neon-local:5432/neondb?sslmode=require
 ```
 
 **Production (Both):**
+
 ```env
 DATABASE_URL=postgres://user:pass@ep-xxx.neon.tech/db?sslmode=require
 ```
@@ -174,16 +180,19 @@ DATABASE_URL=postgres://user:pass@ep-xxx.neon.tech/db?sslmode=require
 ### Running the Application
 
 **Old way:**
+
 ```powershell
 npm run dev
 ```
 
 **New way (Docker):**
+
 ```powershell
 docker-compose -f docker-compose.dev.yml up
 ```
 
 **New way (Non-Docker - still works):**
+
 ```powershell
 npm run dev
 # (Will connect directly to Neon Cloud using DATABASE_URL from .env)
@@ -196,13 +205,14 @@ npm run dev
 ✅ **No Manual Cleanup**: Database branches are automatically deleted when containers stop  
 ✅ **Production Parity**: Same Dockerfile for dev and prod, only environment differs  
 ✅ **Easy Onboarding**: New developers just need to run `docker-compose up`  
-✅ **Branch-based Development**: Test migrations and schema changes safely  
+✅ **Branch-based Development**: Test migrations and schema changes safely
 
 ## Frequently Asked Questions
 
 ### Q: Can I still use `npm run dev` without Docker?
 
 **A:** Yes! The application works both ways:
+
 - With Docker: Uses Neon Local (ephemeral branches)
 - Without Docker: Uses direct Neon Cloud connection (your DATABASE_URL)
 
@@ -221,12 +231,14 @@ npm run dev
 ### Q: How do I switch between dev and prod?
 
 **A:** Use different docker-compose files:
+
 - Development: `docker-compose -f docker-compose.dev.yml up`
 - Production: `docker-compose -f docker-compose.prod.yml up`
 
 ### Q: What about my existing data?
 
-**A:** 
+**A:**
+
 - Development: Neon Local creates new ephemeral branches (fresh data each time)
 - Production: Your production data is unchanged
 - If you need production data in dev, use Neon's branching feature to create a data-seeded branch
@@ -236,6 +248,7 @@ npm run dev
 ### Issue: "Cannot connect to database"
 
 **Solution:**
+
 1. Check if Neon Local is healthy: `docker ps`
 2. Verify environment variables: `docker logs neon-local-dev`
 3. Ensure DATABASE_URL format is correct in docker-compose.dev.yml
@@ -243,6 +256,7 @@ npm run dev
 ### Issue: "Migrations not applying"
 
 **Solution:**
+
 ```powershell
 # Ensure Neon Local is running
 docker-compose -f docker-compose.dev.yml up neon-local -d
@@ -257,6 +271,7 @@ npm run db:migrate
 ### Issue: "Port 5432 already in use"
 
 **Solution:**
+
 ```powershell
 # Find what's using port 5432
 netstat -ano | findstr :5432

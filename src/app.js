@@ -16,19 +16,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(morgan('combined', { stream: {write: msg => logger.info(msg.trim()) }}));
+app.use(
+  morgan('combined', { stream: { write: msg => logger.info(msg.trim()) } })
+);
 
 app.use(securityMiddleware); // Assume securityMiddleware is defined elsewhere
 
 app.get('/', (req, res) => {
   logger.info('Hello from Acquisitions!');
 
-
   res.status(200).send('Hello from Acquisitions!');
 });
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' , timestamp: new Date().toISOString(), uptime: process.uptime()   });
+  res
+    .status(200)
+    .json({
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    });
 });
 
 app.get('/api', (req, res) => {
@@ -40,6 +47,6 @@ app.use('/api/users', usersRoutes); //api/users
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not Found' });
-})
+});
 
 export default app;

@@ -29,11 +29,13 @@ The application uses different database configurations for development and produ
 ### Step 1: Configure Environment Variables
 
 1. Copy the development environment template:
+
    ```powershell
    Copy-Item .env.development .env
    ```
 
 2. Edit `.env` and add your Neon credentials:
+
    ```env
    NEON_API_KEY=your_actual_neon_api_key
    NEON_PROJECT_ID=your_neon_project_id
@@ -56,6 +58,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 **What happens:**
+
 1. Neon Local container starts and creates an ephemeral database branch
 2. Application container starts and connects to Neon Local at `neon-local:5432`
 3. Your app is now running at `http://localhost:3000`
@@ -69,6 +72,7 @@ docker ps
 ```
 
 You should see:
+
 - `neon-local-dev` (Neon Local proxy)
 - `acquisitions-app-dev` (Your application)
 
@@ -102,6 +106,7 @@ docker-compose -f docker-compose.dev.yml down
 ### Step 2: Configure Production Environment
 
 1. Copy the production environment template:
+
    ```powershell
    Copy-Item .env.production .env
    ```
@@ -190,23 +195,23 @@ npm run db:migrate
 
 ### Development (.env.development)
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment mode | `development` |
-| `PORT` | Application port | `3000` |
-| `LOG_LEVEL` | Logging verbosity | `debug` |
-| `NEON_API_KEY` | Neon API key | `your_api_key` |
-| `NEON_PROJECT_ID` | Neon project ID | `proud-wind-12345` |
-| `PARENT_BRANCH_ID` | Branch to fork from | `br-wispy-meadow-67890` |
-| `DATABASE_URL` | Local connection (overridden by compose) | `postgres://neon:npg@localhost:5432/neondb?sslmode=require` |
+| Variable           | Description                              | Example                                                     |
+| ------------------ | ---------------------------------------- | ----------------------------------------------------------- |
+| `NODE_ENV`         | Environment mode                         | `development`                                               |
+| `PORT`             | Application port                         | `3000`                                                      |
+| `LOG_LEVEL`        | Logging verbosity                        | `debug`                                                     |
+| `NEON_API_KEY`     | Neon API key                             | `your_api_key`                                              |
+| `NEON_PROJECT_ID`  | Neon project ID                          | `proud-wind-12345`                                          |
+| `PARENT_BRANCH_ID` | Branch to fork from                      | `br-wispy-meadow-67890`                                     |
+| `DATABASE_URL`     | Local connection (overridden by compose) | `postgres://neon:npg@localhost:5432/neondb?sslmode=require` |
 
 ### Production (.env.production)
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment mode | `production` |
-| `PORT` | Application port | `3000` |
-| `LOG_LEVEL` | Logging verbosity | `info` or `warn` |
+| Variable       | Description                  | Example                                                    |
+| -------------- | ---------------------------- | ---------------------------------------------------------- |
+| `NODE_ENV`     | Environment mode             | `production`                                               |
+| `PORT`         | Application port             | `3000`                                                     |
+| `LOG_LEVEL`    | Logging verbosity            | `info` or `warn`                                           |
 | `DATABASE_URL` | Neon Cloud connection string | `postgres://user:pass@ep-xxx.neon.tech/db?sslmode=require` |
 
 ## Troubleshooting
@@ -216,6 +221,7 @@ npm run db:migrate
 **Problem**: `neon-local` container exits immediately
 
 **Solution**:
+
 - Verify your `NEON_API_KEY` is correct
 - Verify your `NEON_PROJECT_ID` exists
 - Verify your `PARENT_BRANCH_ID` is valid
@@ -226,6 +232,7 @@ npm run db:migrate
 **Problem**: Connection refused errors
 
 **Solution**:
+
 - Ensure Neon Local is healthy: `docker ps` (should show "healthy")
 - Check DATABASE_URL format includes `?sslmode=require`
 - Verify network connectivity: `docker network inspect acquisitions_app-network`
@@ -235,6 +242,7 @@ npm run db:migrate
 **Problem**: `port 3000 or 5432 is already allocated`
 
 **Solution**:
+
 ```powershell
 # Find what's using the port
 netstat -ano | findstr :3000
@@ -254,8 +262,8 @@ import { Pool } from 'pg';
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false  // Required for Neon Local self-signed cert
-  }
+    rejectUnauthorized: false, // Required for Neon Local self-signed cert
+  },
 });
 ```
 
@@ -275,12 +283,14 @@ docker-compose -f docker-compose.dev.yml up --build
 ## Best Practices
 
 ### Development
+
 - Always use ephemeral branches (set `PARENT_BRANCH_ID`, not `BRANCH_ID`)
 - Commit `.env.example` but never `.env` or `.env.development`
 - Use volume mounts for fast iteration
 - Keep development database small and test data minimal
 
 ### Production
+
 - Never expose `DATABASE_URL` in logs or error messages
 - Use secrets management in production (AWS Secrets Manager, Azure Key Vault, etc.)
 - Always run migrations before deploying new code

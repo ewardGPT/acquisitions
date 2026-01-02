@@ -1,4 +1,9 @@
-import { fetchAllUsers, getUserById, updateUser, deleteUser } from '#controllers/user.controller.js';
+import {
+  fetchAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from '#controllers/user.controller.js';
 import express from 'express';
 
 const router = express.Router();

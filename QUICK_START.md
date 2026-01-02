@@ -63,27 +63,30 @@ docker system prune -a
 
 ## Environment Comparison
 
-| Feature | Development | Production |
-|---------|-------------|------------|
-| Database | Neon Local (Ephemeral) | Neon Cloud |
-| Branch | Auto-created & deleted | Persistent |
-| Hot Reload | ✅ Enabled | ❌ Disabled |
-| Logging | Debug | Info/Warn |
-| SSL | Self-signed cert | Valid cert |
-| Port | 3000 (configurable) | 3000 (configurable) |
+| Feature    | Development            | Production          |
+| ---------- | ---------------------- | ------------------- |
+| Database   | Neon Local (Ephemeral) | Neon Cloud          |
+| Branch     | Auto-created & deleted | Persistent          |
+| Hot Reload | ✅ Enabled             | ❌ Disabled         |
+| Logging    | Debug                  | Info/Warn           |
+| SSL        | Self-signed cert       | Valid cert          |
+| Port       | 3000 (configurable)    | 3000 (configurable) |
 
 ## Troubleshooting
 
 **Connection issues?**
+
 - Check `docker ps` for container health
 - Verify environment variables in `.env`
 - Check logs: `docker logs <container-name>`
 
 **Port conflicts?**
+
 - Find process: `netstat -ano | findstr :3000`
 - Change port in docker-compose.yml
 
 **Need fresh start?**
+
 ```powershell
 docker-compose -f docker-compose.dev.yml down -v
 docker-compose -f docker-compose.dev.yml up --build

@@ -163,6 +163,7 @@ acquisitions/
 ## Quick Usage
 
 ### For Development
+
 ```powershell
 # Copy template
 Copy-Item .env.development .env
@@ -177,6 +178,7 @@ docker-compose -f docker-compose.dev.yml down
 ```
 
 ### For Production
+
 ```powershell
 # Copy template
 Copy-Item .env.production .env
@@ -196,44 +198,51 @@ docker-compose -f docker-compose.prod.yml down
 ## Key Features
 
 ### Development
+
 ✅ Ephemeral database branches (fresh on each start)  
 ✅ Hot reloading (code changes reflect immediately)  
 ✅ Isolated development environment  
 ✅ No manual database cleanup  
-✅ Debug logging enabled  
+✅ Debug logging enabled
 
 ### Production
+
 ✅ Connects to persistent Neon Cloud database  
 ✅ Optimized Docker image (multi-stage build)  
 ✅ Non-root user for security  
 ✅ Health checks for monitoring  
 ✅ Auto-restart on failures  
-✅ Production logging  
+✅ Production logging
 
 ## Environment Variables
 
 ### Development Required
+
 - `NEON_API_KEY` - From Neon Console
 - `NEON_PROJECT_ID` - Your Neon project
 - `PARENT_BRANCH_ID` - Main branch to fork from
 - `NODE_ENV` - Set to "development"
 
 ### Production Required
+
 - `DATABASE_URL` - Full Neon Cloud connection string
 - `NODE_ENV` - Set to "production"
 
 ### Optional
+
 - `PORT` - Application port (default: 3000)
 - `LOG_LEVEL` - Logging verbosity (default: debug for dev, info for prod)
 
 ## Security Notes
 
 ⚠️ **NEVER commit:**
+
 - `.env`
 - `.env.development` (with real credentials)
 - `.env.production` (with real credentials)
 
 ✅ **Safe to commit:**
+
 - `.env.example`
 - `docker-compose.*.yml`
 - `Dockerfile`
@@ -256,6 +265,7 @@ docker-compose -f docker-compose.prod.yml down
 ## Troubleshooting
 
 See [DOCKER_SETUP.md#troubleshooting](./DOCKER_SETUP.md#troubleshooting) for:
+
 - Connection issues
 - Port conflicts
 - SSL certificate errors
