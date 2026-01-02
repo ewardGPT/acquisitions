@@ -30,7 +30,7 @@ export const signup = async (req, res, next) => {
 
     logger.info(`User registered successfully: ${email}`);
     res.status(201).json({
-      message: 'User registered',
+      message: 'User created successfully',
       user: {
         id: user.id,
         name: user.name,

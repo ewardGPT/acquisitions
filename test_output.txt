@@ -1,0 +1,25 @@
+
+> acquisitions@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js
+
+
+ReferenceError: You are trying to `import` a file after the Jest environment has been torn down. From tests/app.test.js.
+FAIL tests/app.test.js
+  ΓùÅ Test suite failed to run
+
+    Package import specifier "#middlewares/security.middleware.js" is not defined in package C:\Users\warde\Documents\acquisitions\package.json
+
+      at handleResolveResult (node_modules/jest-resolve/build/index.js:131:11)
+
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |       0 |        0 |       0 |       0 |                   
+----------|---------|----------|---------|---------|-------------------
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        0.894 s
+Ran all test suites.
+(node:18752) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
