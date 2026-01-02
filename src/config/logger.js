@@ -7,7 +7,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   )),
-  defaultMeta: { service: 'acqusitions-api' },
+  defaultMeta: { service: 'acquisitions-api' },
   transports: [
     new winston.transports.File({ filename: 'error.logs/error.lg', level: 'error' }),
     new winston.transports.File({ filename: 'logs/combined.lg' }),

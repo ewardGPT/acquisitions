@@ -43,14 +43,14 @@ This is a Node.js Express REST API with PostgreSQL (Neon) database using Drizzle
 
 **Import Aliases**: The project uses `#` prefix for cleaner imports
 ```
-#config/* → src/config/*
-#middlewares/* → src/middlewares/*
-#routes/* → src/routes/*
-#utils/* → src/utils/*
-#services/* → src/services/*
-#models/* → src/models/*
-#controllers/* → src/controllers/*
-#validations/* → src/validations/*
+#config/*  src/config/*
+#middleware/*  src/middleware/*
+#routes/*  src/routes/*
+#utils/*  src/utils/*
+#services/*  src/services/*
+#models/*  src/models/*
+#controllers/*  src/controllers/*
+#validations/*  src/validations/*
 ```
 
 ### Validation

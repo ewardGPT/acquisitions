@@ -1,0 +1,147 @@
+# Example GitHub Actions CI/CD Workflow
+# Save this as .github/workflows/ci-cd.yml
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # Test job using ephemeral Neon branch
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      # Neon Local for testing
+      neon-local:
+        image: neondatabase/neon_local:latest
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+          PARENT_BRANCH_ID: ${{ secrets.PARENT_BRANCH_ID }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h localhost -p 5432"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run formatter check
+        run: npm run format:check
+
+      - name: Setup test database
+        env:
+          DATABASE_URL: postgres://neon:npg@localhost:5432/neondb?sslmode=require
+          NODE_ENV: test
+        run: |
+          npm run db:migrate
+          # Add seed command if you have one:
+          # npm run db:seed
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://neon:npg@localhost:5432/neondb?sslmode=require
+          NODE_ENV: test
+        run: |
+          # Add your test command here
+          # npm test
+          echo "Tests would run here"
+
+  # Build and push Docker image
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/acquisitions:latest
+            ${{ secrets.DOCKER_USERNAME }}/acquisitions:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/acquisitions:latest
+          cache-to: type=inline
+
+  # Deploy to production
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci --only=production
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          NODE_ENV: production
+        run: npm run db:migrate
+
+      - name: Deploy to server
+        run: |
+          # Add your deployment commands here
+          # Example: SSH into server and pull new Docker image
+          echo "Deployment would happen here"
+          
+      # Alternative: Deploy to cloud platforms
+      # - name: Deploy to Railway/Render/Fly.io
+      #   run: |
+      #     # Use platform-specific deployment commands
+
+# Required GitHub Secrets:
+# - NEON_API_KEY: Your Neon API key
+# - NEON_PROJECT_ID: Your Neon project ID
+# - PARENT_BRANCH_ID: Main branch ID for creating ephemeral test branches
+# - PRODUCTION_DATABASE_URL: Production Neon database URL
+# - DOCKER_USERNAME: Docker Hub username (if using Docker Hub)
+# - DOCKER_PASSWORD: Docker Hub password or access token
